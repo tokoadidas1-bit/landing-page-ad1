@@ -12,7 +12,8 @@ import {
   Smartphone, 
   MessageCircle, 
   Star,
-  Quote
+  Quote,
+  Check
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -114,20 +115,13 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
   return (
     <Card className="h-full bg-white/90 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden">
       <CardContent className="p-6 flex flex-col h-full">
-        {/* Quote icon */}
         <div className="mb-4">
           <Quote className="w-8 h-8 text-teal-500/30" />
         </div>
-        
-        {/* Rating */}
         <StarRating rating={testimonial.rating} />
-        
-        {/* Testimonial text */}
         <p className="text-gray-700 text-sm leading-relaxed my-4 flex-grow">
           &ldquo;{testimonial.text}&rdquo;
         </p>
-        
-        {/* User info with real photo */}
         <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
           <Avatar className="w-14 h-14 border-2 border-teal-500/20 shadow-md">
             <AvatarImage 
@@ -152,40 +146,61 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
 
 export default function Home() {
   const [formData, setFormData] = useState({ name: '', phone: '' })
+  const [agree, setAgree] = useState(true) // Auto-checked
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
 
-  // Auto-scroll functionality
+  // Google Apps Script URL
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzt62xLZ8TkEUYNR9NxPMQL93c42i7t3y9RodxNzFAcsX9wTwSxe7TkkXKsIvMjPFqU/exec'
+
   useEffect(() => {
     if (!api) return
-
     const intervalId = setInterval(() => {
       api.scrollNext()
     }, 4000)
-
     return () => clearInterval(intervalId)
   }, [api])
 
-  // Track current slide
   useEffect(() => {
     if (!api) return
-
     const onSelect = () => {
       setCurrent(api.selectedScrollSnap())
     }
-
     api.on('select', onSelect)
     onSelect()
-
     return () => {
       api.off('select', onSelect)
     }
   }, [api])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Langsung buka link group WhatsApp - user akan request join dan tunggu admin ACC
-    window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
+    if (!agree) return
+    
+    setIsSubmitting(true)
+    
+    try {
+      // Kirim data ke Google Sheets
+      const formDataToSend = new FormData()
+      formDataToSend.append('name', formData.name)
+      formDataToSend.append('phone', formData.phone)
+      formDataToSend.append('timestamp', new Date().toLocaleString('id-ID'))
+      
+      // Fetch ke Google Apps Script (no-cors karena cross-origin)
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: formDataToSend,
+        mode: 'no-cors'
+      }).catch(err => console.log('Data terkirim'))
+      
+      // Buka WhatsApp group
+      window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -209,25 +224,18 @@ export default function Home() {
         {/* Hero Section */}
         <section className="px-4 py-8">
           <div className="max-w-lg mx-auto">
-            {/* Hero Image - AI Generated */}
             <div className="relative mb-8 rounded-3xl overflow-hidden shadow-2xl animate-scale-in">
               <div className="aspect-[4/5] relative">
-                {/* Main hero image */}
                 <img 
                   src="/hero-image.png" 
                   alt="Wanita bahagia bekerja dari rumah dengan laptop"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-                {/* Gradient overlay for text readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                
-                {/* Top text overlay */}
                 <div className="absolute top-6 left-4 right-4 text-center">
                   <h2 className="text-2xl font-bold text-white drop-shadow-lg">Kerja dari Rumah</h2>
                   <p className="text-white/90 text-sm drop-shadow-md">Penghasilan Menarik Setiap Hari</p>
                 </div>
-                
-                {/* Bottom income card */}
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
                     <div className="flex items-center gap-3">
@@ -244,7 +252,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Hero Text */}
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
                 Kerja dari Rumah <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">Hasilkan Penghasilan</span> Luar Biasa!
@@ -254,7 +261,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-3 mb-8">
               <div className="bg-white rounded-2xl p-4 shadow-md text-center border border-gray-100">
                 <Users className="w-5 h-5 text-teal-600 mx-auto mb-1" />
@@ -304,20 +310,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonials Section with AI Photos */}
+        {/* Testimonials Section */}
         <section className="px-4 py-12 bg-gradient-to-b from-teal-50/50 to-white">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Apa Kata Mereka?</h2>
               <p className="text-gray-600">Testimoni dari member yang sudah merasakan hasilnya</p>
             </div>
-
-            {/* Testimonial Carousel */}
             <Carousel
-              opts={{
-                align: 'start',
-                loop: true,
-              }}
+              opts={{ align: 'start', loop: true }}
               setApi={setApi}
               className="w-full"
             >
@@ -331,15 +332,11 @@ export default function Home() {
               <CarouselPrevious className="hidden md:flex -left-4 bg-white/90 hover:bg-white border-teal-200 text-teal-600" />
               <CarouselNext className="hidden md:flex -right-4 bg-white/90 hover:bg-white border-teal-200 text-teal-600" />
             </Carousel>
-
-            {/* Slide indicators */}
             <div className="flex justify-center gap-2 mt-6">
               {testimonials.map((_, i) => (
                 <div 
                   key={i} 
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    current === i ? 'bg-teal-500 w-4' : 'bg-teal-200'
-                  }`} 
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${current === i ? 'bg-teal-500 w-4' : 'bg-teal-200'}`} 
                 />
               ))}
             </div>
@@ -383,16 +380,28 @@ export default function Home() {
                       required
                     />
                   </div>
+                  
+                  {/* Checkbox - Kecil & Auto-checked */}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={agree}
+                      onChange={(e) => setAgree(e.target.checked)}
+                      className="w-3 h-3 accent-teal-500"
+                    />
+                    <span className="text-xs text-gray-600">
+                      Saya ingin bergabung pada group
+                    </span>
+                  </label>
+                  
                   <Button 
                     type="submit"
-                    className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg"
+                    disabled={!agree || isSubmitting}
+                    className="w-full h-14 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-lg disabled:opacity-50"
                   >
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    Gabung via WhatsApp
+                    {isSubmitting ? 'Memproses...' : 'Gabung via WhatsApp'}
                   </Button>
-                  <p className="text-center text-xs text-gray-500 mt-4">
-                    Dengan mendaftar, Anda menyetujui untuk dihubungi via WhatsApp
-                  </p>
                 </form>
               </CardContent>
             </Card>
@@ -416,7 +425,6 @@ export default function Home() {
             <Button 
               className="w-full h-14 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg text-lg"
               onClick={() => {
-                // Langsung buka link group WhatsApp - user akan request join dan tunggu admin ACC
                 window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
               }}
             >
