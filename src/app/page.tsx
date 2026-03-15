@@ -184,8 +184,8 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const message = `Halo, saya ingin mendaftar kerja online.%0ANama: ${formData.name}%0ANo. WhatsApp: ${formData.phone}`
-    window.open(`https://wa.me/6281234567890?text=${message}`, '_blank')
+    // Langsung buka link group WhatsApp - user akan request join dan tunggu admin ACC
+    window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
   }
 
   return (
@@ -416,8 +416,8 @@ export default function Home() {
             <Button 
               className="w-full h-14 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg text-lg"
               onClick={() => {
-                const message = "Halo, saya ingin mendaftar kerja online!"
-                window.open(`https://wa.me/6281234567890?text=${message}`, '_blank')
+                // Langsung buka link group WhatsApp - user akan request join dan tunggu admin ACC
+                window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
               }}
             >
               Daftar Sekarang - GRATIS!
