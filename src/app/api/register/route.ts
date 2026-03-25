@@ -1,49 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma'; // Pastikan import dari src/lib/prisma.ts
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { name, phone } = body
+    const body = await request.json();
+    const { email, name } = body;
 
-    if (!name || !phone) {
-      return NextResponse.json(
-        { error: 'Nama dan nomor telepon wajib diisi' },
-        { status: 400 }
-      )
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const registration = await db.registration.create({
+    // Simpan ke database
+    const user = await prisma.user.create({
       data: {
+        email,
         name,
-        phone,
       },
-    })
+    });
 
-    return NextResponse.json({ success: true, data: registration })
+    return NextResponse.json(user, { status: 201 });
   } catch (error) {
-    console.error('Registration error:', error)
-    return NextResponse.json(
-      { error: 'Terjadi kesalahan saat menyimpan data' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function GET() {
-  try {
-    const registrations = await db.registration.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
-
-    return NextResponse.json({ data: registrations })
-  } catch (error) {
-    console.error('Fetch error:', error)
-    return NextResponse.json(
-      { error: 'Terjadi kesalahan saat mengambil data' },
-      { status: 500 }
-    )
+    console.error(error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
