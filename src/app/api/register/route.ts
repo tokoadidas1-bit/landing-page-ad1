@@ -10,11 +10,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Nama dan Nomor HP wajib diisi' }, { status: 400 });
     }
 
-    // Simpan ke database Supabase
+    // Menangkap IP Pengguna
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+               request.headers.get('x-real-ip') || 
+               'Unknown';
+
+    // Simpan ke database
     const user = await prisma.user.create({
       data: {
         name,
         phone,
+        ipAddress: ip,
       },
     });
 
