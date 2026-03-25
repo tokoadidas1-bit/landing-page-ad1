@@ -408,19 +408,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-100 p-4 shadow-2xl z-50">
-          <div className="max-w-lg mx-auto">
-            <Button 
-              className="w-full h-14 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg text-lg"
-              onClick={() => {
-                window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
-              }}
-            >
-              Daftar Sekarang - GRATIS!
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   )
