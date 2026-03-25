@@ -12,8 +12,7 @@ import {
   Smartphone, 
   MessageCircle, 
   Star,
-  Quote,
-  Check
+  Quote
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -148,8 +147,6 @@ export default function Home() {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
 
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzt62xLZ8TkEUYNR9NxPMQL93c42i7t3y9RodxNzFAcsX9wTwSxe7TkkXKsIvMjPFqU/exec'
-
   useEffect(() => {
     if (!api) return
     const intervalId = setInterval(() => {
@@ -177,20 +174,27 @@ export default function Home() {
     setIsSubmitting(true)
     
     try {
-      const formDataToSend = new FormData()
-      formDataToSend.append('name', formData.name)
-      formDataToSend.append('phone', formData.phone)
-      formDataToSend.append('timestamp', new Date().toLocaleString('id-ID'))
-      
-      fetch(GOOGLE_SCRIPT_URL, {
+      // Kirim data ke Database Supabase via API internal
+      const response = await fetch('/api/register', {
         method: 'POST',
-        body: formDataToSend,
-        mode: 'no-cors'
-      }).catch(err => console.log('Data terkirim'))
-      
-      window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+        }),
+      });
+
+      if (response.ok) {
+        // Jika simpan berhasil, buka WhatsApp group
+        window.open('https://chat.whatsapp.com/KU8AJuyy6363UoPthA5UHj?mode=hq2tcla', '_blank')
+      } else {
+        alert('Gagal menyimpan data. Silakan coba lagi.');
+      }
     } catch (error) {
       console.error('Error:', error)
+      alert('Terjadi kesalahan jaringan.');
     } finally {
       setIsSubmitting(false)
     }
@@ -277,7 +281,7 @@ export default function Home() {
             <div className="space-y-4">
               {[
                 { icon: ShieldCheck, title: "Terpercaya & Aman", desc: "Sudah terdaftar resmi dengan sistem yang teraudit", color: "from-teal-500 to-cyan-500" },
-               { icon: HomeIcon, title: "Kerja Dari Rumah", desc: "Tidak perlu keluar rumah, bisa dikerjakan dari mana saja", color: "from-orange-500 to-amber-500" },
+                { icon: HomeIcon, title: "Kerja Dari Rumah", desc: "Tidak perlu keluar rumah, bisa dikerjakan dari mana saja", color: "from-orange-500 to-amber-500" },
                 { icon: Wallet, title: "Penghasilan Tinggi", desc: "Potensi penghasilan hingga Rp2.000.000/hari + bonus", color: "from-green-500 to-emerald-500" },
                 { icon: Smartphone, title: "Tugas Sederhana", desc: "Tidak perlu pengalaman khusus, mudah dikerjakan", color: "from-purple-500 to-violet-500" }
               ].map((item, i) => (
