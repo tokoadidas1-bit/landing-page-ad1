@@ -8,7 +8,7 @@ import {
   TrendingUp, 
   Clock,
   ShieldCheck, 
-  Home, // DIGANTI DARI 'House' MENJADI 'Home'
+  Home, 
   Smartphone, 
   MessageCircle, 
   Star,
