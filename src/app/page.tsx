@@ -288,7 +288,7 @@ export default function Home() {
             <div className="space-y-4">
               {[
                 { icon: ShieldCheck, title: "Terpercaya & Aman", desc: "Sudah terdaftar resmi dengan sistem yang teraudit", color: "from-teal-500 to-cyan-500" },
-                { icon: Home, title: "Kerja Dari Rumah", desc: "Tidak perlu keluar rumah, bisa dikerjakan dari mana saja", color: "from-orange-500 to-amber-500" }, // DIGANTI DARI House KE Home
+                { icon: Home, title: "Kerja Dari Rumah", desc: "Tidak perlu keluar rumah, bisa dikerjakan dari mana saja", color: "from-orange-500 to-amber-500" },
                 { icon: Wallet, title: "Penghasilan Tinggi", desc: "Potensi penghasilan hingga Rp2.000.000/hari + bonus", color: "from-green-500 to-emerald-500" },
                 { icon: Smartphone, title: "Tugas Sederhana", desc: "Tidak perlu pengalaman khusus, mudah dikerjakan", color: "from-purple-500 to-violet-500" }
               ].map((item, i) => (
