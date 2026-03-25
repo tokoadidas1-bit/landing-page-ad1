@@ -1,16 +1,11 @@
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-}
+import { PrismaClient } from '@prisma/client';
 
-generator client {
-  provider = "prisma-client-js"
-}
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Ganti 'User' dengan model yang Anda butuhkan, misalnya 'Lead' atau 'Order'
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-}
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log: ['query'],
+  });
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
